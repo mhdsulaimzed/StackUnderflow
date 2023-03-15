@@ -1,0 +1,85 @@
+{%extends 'base.html'%}
+
+{%block body%}
+<!-- Quesion section -->
+
+<div class="card mb-3" style="max-width: 100%;">
+    <div class="card-header">
+        {%if request.user.profile.profile_pic%}
+        <img src="{{request.user.profile.profile_pic.url}}" alt="" class="rounded-circle" height="55px">
+
+
+        {%endif%}
+        {{request.user}}
+        
+
+       
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Ask a New Question</h5>
+      <form action="" method="post" enctype="multipart/form-data">
+        {%csrf_token%}
+        {{form.as_p}}
+
+        <button type="submit">Post</button>
+    </form>
+    </div>
+  </div>
+
+
+<!-- end question section -->
+
+{%if request.user.profile%}
+    <a href="{%url 'profile-edit' request.user.profile.id%}">Update profile
+    </a>
+    <a href="{%url 'profile-view'%}">View profile</a>
+
+
+{%else%}
+    <a href="{%url 'profile-add'%}">Create profile</a>
+
+
+{%endif%}
+
+
+
+
+{%for q in questions%}
+<div>
+    {{q.description}}
+    {%if q.image%}
+        <img src="{{q.image.url}}" alt="">
+    {%endif%}
+    
+   <p> {{request.user}}  {{q.created_date}}</p>
+</div>
+<div>
+post your answer
+<form action="{%url 'add-ans' q.id%}" method="post">
+    {%csrf_token%}
+    <input type="textarea" class="form-control" name="answer">
+    <button type="submit">Add</button>
+
+</form>
+<div>
+    <h3><ul>Answers</ul></h3>
+    <div>
+        {%for ans in q.question_answers%}
+
+        {{ans.answer}}<p>posted by:{{ans.user}} on :{{ans.created_date}}<p/>
+        
+        <a href="{%url 'up-vote' ans.id%}" class="btn btn-secondary">^</a>
+
+        {{ans.upvote_count}}
+
+                <hr>
+        {%endfor%}
+    </div>
+
+</div>
+</div>
+
+
+{%endfor%}
+
+{%endblock%}
